@@ -240,9 +240,6 @@ def consulta_sitios_it(lista_it):
             
             if "Alerta!" in respuesta.content:
                 warning.append(respuesta.content[8:])
-        
-        else:
-            it_fail.append(sitio)
 
     barra.completado()             
     end_time = time.time() - zero_time            
