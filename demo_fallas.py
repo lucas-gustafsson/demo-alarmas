@@ -278,6 +278,7 @@ def consulta_sitios_it(lista_it):
     rag = cargar_rag()
     barra = BarraProgreso(len(lista_it))
 
+    warning=[]
     zero_time = time.time()
     
     for sitio in lista_it:
