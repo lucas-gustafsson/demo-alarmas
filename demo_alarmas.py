@@ -228,6 +228,7 @@ def consulta_sitios_it(lista_it):
     """
     mensajes = [("system", system_prompt), ("human", "")]
     
+    warning=[]
     zero_time = time.time()
     
     for sitio in lista_it:
