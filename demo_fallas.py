@@ -288,9 +288,6 @@ def consulta_sitios_it(lista_it):
             respuesta = rag.invoke(f"Log: {amos}")
             if "Alerta!" in respuesta:
                 warning.append(respuesta)
-            
-        else:
-            it_fail.append(sitio)
 
     barra.completado()             
     end_time = time.time() - zero_time            
