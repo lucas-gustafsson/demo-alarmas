@@ -193,12 +193,7 @@ def conexion_mail(warning):
     subject = f"​⚠️ WARNING! {datetime.today().strftime("%Y-%m-%d")}"
     
     if len(warning) > 0:
-        content = """
-        DEMO FALLAS IT
-        
-        Sitios con fallas activas:
-        
-        """
+        content = "DEMO FALLAS IT" + "\n\n" + "Sitios con fallas activas:" + "\n\n"
         for w in warning:
             content += w
             
@@ -253,6 +248,8 @@ def cargar_rag():
     template = """
     Eres una IA diseñada para monitorear fallas en sitios móviles de una red de telecomunicaciones.
     Tu función principal es recibir un log de un sitio móvil y analizarlo en busca de fallas.
+    Si identificas una falla, responde: "Alerta! nombre_sitio: nombre_falla".
+    Sigue estrictamente este formato de respuesta.
 
     Usa las siguientes piezas de contexto para responder la pregunta al final.
 
