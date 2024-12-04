@@ -188,12 +188,7 @@ def conexion_mail(warning):
     subject = f"​⚠️ WARNING! {datetime.today().strftime("%Y-%m-%d")}"
     
     if len(warning) > 0:
-        content = """
-        DEMO ALARMAS IT
-        
-        Sitios con alarmas críticas activas:
-        
-        """
+        content = "DEMO ALARMAS IT" + "\n\n" + "Sitios con alarmas críticas activas:" + "\n\n"
         for w in warning:
             content += w
             
