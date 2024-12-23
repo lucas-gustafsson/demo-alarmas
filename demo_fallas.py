@@ -45,6 +45,13 @@ class BarraProgreso:
 def limpiar_pantalla():
     """Limpia la pantalla de la consola."""
     os.system('cls' if os.name == 'nt' else 'clear')
+
+def limpiar_texto(texto):
+    """Divide en líneas, elimina espacios de cada línea y une las líneas con un salto de línea."""
+    lineas = texto.splitlines()
+    lineas_limpias = [linea.strip() for linea in lineas if linea.strip()]
+    texto_limpio = '\n'.join(lineas_limpias)
+    return texto_limpio
     
 def imprimir_banner():
     """Imprime el banner del programa con el título y descripción."""
@@ -162,7 +169,7 @@ def conexion_sql(dias):
 
 def conexion_ssh(sitio):
     """Función que permite la conexión SSH a ENM."""
-    comandos = [f"amos {sitio}", "lt all", "sts", "alt"]      
+    comandos = [f"amos {sitio}", "lt all", "alt", "sts", "st cell"]      
     amos = ""
     try:
         connection = ConnectHandler(
@@ -175,7 +182,7 @@ def conexion_ssh(sitio):
         
         for cmd in comandos:
             output = connection.send_command(cmd, expect_string=f"{sitio}>", read_timeout=30, strip_command=True, strip_prompt=True)
-            if cmd=="sts" or cmd=="alt":
+            if cmd=="alt" or cmd=="sts" or cmd=="st cell":
                 amos += sitio + ">\n" + output[:-15] + "\n"
         connection.disconnect()
         return amos
@@ -193,9 +200,9 @@ def conexion_mail(warning):
     subject = f"​⚠️ WARNING! {datetime.today().strftime("%Y-%m-%d")}"
     
     if len(warning) > 0:
-        content = "DEMO FALLAS IT" + "\n\n" + "Sitios con fallas activas:" + "\n\n"
+        content = "DEMO FALLAS IT" + "\n\n"
         for w in warning:
-            content += w
+            content += w + "\n"
             
         em = EmailMessage()
         em["From"] = user
@@ -222,7 +229,7 @@ def cargar_vectorstore():
         documentos = []
         for archivo in Path("RAG").glob("*.txt"):
             with archivo.open('r', encoding='utf-8') as file:
-                contenido = file.read()  # Leer el contenido como string
+                contenido = file.read()
                 documento = Document(page_content=contenido, metadata={"source": archivo.name})
                 documentos.append(documento)
         
@@ -239,16 +246,20 @@ def cargar_rag():
     """
     Función que inicia el RAG
     """
-    llm = ChatOllama(model="gemma2", temperature=0)
+    llm = ChatOllama(model="gemma2:9b-instruct-q8_0", temperature=0)
     
     vectorstore = cargar_vectorstore()
     
     retriever = vectorstore.as_retriever(search_kwargs={'k': 1})
     
     template = """
-    Eres una IA diseñada para monitorear fallas en sitios móviles de una red de telecomunicaciones.
-    Tu función principal es recibir un log de un sitio móvil y analizarlo en busca de fallas.
-    Si identificas una falla, responde: "Alerta! nombre_sitio: nombre_falla".
+    Eres una IA diseñada para monitorear logs de sitios móviles de una red de telecomunicaciones.
+    Tu función principal es recibir un log extraído de un sitio móvil y detectar las fallas en él.
+    En primer lugar añade a la respuesta: "Sitio: nombre_sitio".
+    Si detectas una o más alarmas activas de tipo Crítica (C) añade a la respuesta "Falla Alarma Crítica Activa: nombre_alarmas".
+    Si detectas que el sitio no está sincronizado añade a la respuesta "Falla de Sincronismo".
+    Si detectas que una o más celdas están deshabilitadas añade a la respuesta "Falla Celdas Deshabilitadas: nombre_celdas"
+    Si no detectas fallas añade a la respuesta: "Todo en orden".
     Sigue estrictamente este formato de respuesta.
 
     Usa las siguientes piezas de contexto para responder la pregunta al final.
@@ -283,9 +294,10 @@ def consulta_sitios_it(lista_it):
         amos = conexion_ssh(sitio)
         
         if amos is not None:
-            respuesta = rag.invoke(f"Log: {amos}")
-            if "Alerta!" in respuesta:
-                warning.append(respuesta)
+            respuesta = rag.invoke(amos)
+            if "Falla" in respuesta:
+                respuesta_limpia = limpiar_texto(respuesta)
+                warning.append(respuesta_limpia)
 
     barra.completado()             
     end_time = time.time() - zero_time            
