@@ -1,10 +1,11 @@
-Información Importante:
+1. Nivel de severidad Alarmas.
+Las alarmas se clasifican en crítica, mayor, menor y de warning, las cuales se abrevian C, M, m, w respectivamente.
 
-# Alarmas
-Las alarmas se clasifican en crítica, mayor, menor y de advertencia, las cuales se abrevian C, M, m, w respectivamente.
-Si aparece una alarma crítica, identifica una Falla Alarma Crítica.
-Si aparece una alarma mayor, identifica una Falla Alarma Mayor.
+2. Estado de Sincronismo.
+TIME_LOCKED y FREQUENCY_LOCKED indican que el sitio está sincronizado.
+TIME_HOLDOVER y FREQUENCY_HOLDOVER indican que el sitio no está sincronizado.
 
-# Sincronismo
-RNT_TIME_LOCKED y FREQUENCY_LOCKED indican que el sitio está sincronizado.
-Si estas condiciones no se cumplen, identifica una Falla de Sincronismo.
+3. Celdas.
+Las celdas se denominan UtranCell (3G), EUtranCell (4G), nrCell (5G), NbIotCell (IoT).
+Las celdas se nombran con 1 letra y 5 números. Ejemplos: A99901, C56700, E98702.
+Op. State DISABLED indica que la celda está deshabilitada.
